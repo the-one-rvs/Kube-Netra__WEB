@@ -83,9 +83,6 @@ const enterProject = asyncHandler(async(req, res) => {
             throw new ApiError(400, "Project not found")
         }
 
-        if (project.createdBy.toString() !== req.user._id.toString()) {
-            throw new ApiError(400, "Unauthorized request")
-        }
 
         const projectToken = await jwt.sign({
             _id: project._id,
@@ -117,11 +114,6 @@ const exitProject = asyncHandler(async(req, res) => {
             throw new ApiError(400, "Unauthorized request")
         }
 
-        if (req.project.createdBy !== req.user._id) {
-            throw new ApiError(400, "You are not authorized to exit this project")
-
-        }
-
         const options = {
             secure: true,
             httpOnly: true
@@ -141,10 +133,6 @@ const updateProject = asyncHandler(async(req, res) => {
     try {
         if (!req.user && !req.project) {
             throw new ApiError(400, "Unauthorized request")
-        }
-
-        if (req.project.createdBy !== req.user._id) {
-            throw new ApiError(400, "You are not authorized to update this project")
         }
 
         const {
@@ -198,10 +186,6 @@ const deleteProject = asyncHandler(async(req, res) => {
             throw new ApiError(400, "Unauthorized request")
         }
 
-        if (req.project.createdBy !== req.user._id) {
-            throw new ApiError(400, "You are not authorized to delete this project")
-        }
-
         await Project.findByIdAndDelete(req.project._id)
 
         const options = {
@@ -225,10 +209,6 @@ const getCurrentProjectDetails = asyncHandler(async(req, res) => {
             throw new ApiError(400, "Unauthorized request")
         }
 
-        if (req.project.createdBy !== req.user._id) {
-            throw new ApiError(400, "You are not authorized to view this project details")
-        }
-
         const project = await Project.findById(req.project._id)
         if (!project) {
             throw new ApiError(400, "Project not found")
@@ -240,11 +220,31 @@ const getCurrentProjectDetails = asyncHandler(async(req, res) => {
     }
 })
 
+const getAllProjects = asyncHandler(async(req, res) => {
+    try {
+        if (!req.user) {
+            throw new ApiError(400, "Unauthorized request")
+        }
+
+        const projects = await Project.find().select("-githubPAT -dockerhubPAT").populate("createdBy", "name")
+
+        if (!projects) {
+            throw new ApiError(400, "Projects not found")
+        }
+
+        return res.status(200).json(new ApiResponse(200, projects, "Projects found successfully"))
+
+    } catch (error) {
+        throw new ApiError(400, error?.message)
+    }
+})
+
 export {
     createProject,
     enterProject,
     exitProject,
     updateProject,
     deleteProject,
-    getCurrentProjectDetails
+    getCurrentProjectDetails,
+    getAllProjects
 }

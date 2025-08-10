@@ -29,6 +29,11 @@ const userSchema = new Schema (
             type: String,
             required: [true, 'Password is required']
         },
+        permissions: {
+            type: Array,
+            required: true,
+            default: []
+        },
         refreshToken: {
             type: String
         }

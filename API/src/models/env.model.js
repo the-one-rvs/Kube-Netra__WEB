@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Schema }from "mongoose";
+import { ApiError } from "../utils/ApiError";
 
 const environmentSchema = new Schema({
     ennvironmentName: {
@@ -11,7 +12,7 @@ const environmentSchema = new Schema({
         type: Number,
         required: true
     },
-    project: {
+    projectId: {
         type: Schema.Types.ObjectId,
         ref: "Project",
         required: true
@@ -37,5 +38,16 @@ const environmentSchema = new Schema({
 }, {
     timeseries: true
 })
+
+
+environmentSchema.pre('save', async function(next) {
+    try {
+        this.environmentNumber = (await this.constructor.countDocuments({ projectId: this.projectId })) + 1;
+        next();
+    } catch (error) {
+        throw new ApiError(400, error?.message)
+    }
+});
+
 
 export const Environment = mongoose.model("Environment", environmentSchema)

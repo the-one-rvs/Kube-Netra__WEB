@@ -6,11 +6,63 @@ import jwt from "jsonwebtoken"
 import { emailValidator, passValidator } from "../utils/validator.js";
 import bcrypt from "bcrypt"
 
-const registerUser = asyncHandler(async(req, res) => {
+
+const createRootAdmin = asyncHandler(async(req, res) => {
     try {
         const { username, email, fullname, password } = req.body
         if (!username || !email || !fullname || !password) {
             throw new ApiError(400, "All fields are required")
+        }
+
+        if (!emailValidator(email)) {
+            throw new ApiError(400, "Invalid email")
+        }
+
+        if (!passValidator(password)) {
+            throw new ApiError(400, "Invalid password")
+        }
+
+        const exsistingAdmin = await User.findOne({ email })
+        if (exsistingAdmin) {
+            throw new ApiError(400, "User already exists")
+        }
+        const user = await User.create(
+            {
+                username: username, 
+                email: email, 
+                fullname: fullname, 
+                password: password,
+                permissions: ["admin"] 
+            }
+        )
+        const createdAdmin = await User.findById(user._id).select("-password -refreshToken")
+        if (!createdAdmin) {
+            throw new ApiError(400, "User not found")
+        }
+
+        return res.status(200).json(new ApiResponse(
+            200,
+            createdAdmin,
+            "Admin registered successfully"
+        ))
+    } catch (error) {
+        
+    }
+})
+
+const registerUser = asyncHandler(async(req, res) => {
+    try {
+        const { username, email, fullname, password, permissions } = req.body
+        if (!username || !email || !fullname || !password) {
+            throw new ApiError(400, "All fields are required")
+        }
+
+        if (!permissions) {
+            throw new ApiError(400, "Permissions are required")
+        }
+
+        if (!Array.isArray(permissions)) {
+            throw new ApiError(400, "Permissions must be an array")
         }
 
         if (!emailValidator(email)) {
@@ -30,7 +82,8 @@ const registerUser = asyncHandler(async(req, res) => {
                 username: username, 
                 email: email, 
                 fullname: fullname, 
-                password: password 
+                password: password,
+                permissions: permissions 
             }
         )
         const createdUser = await User.findById(user._id).select("-password -refreshToken")
@@ -47,6 +100,7 @@ const registerUser = asyncHandler(async(req, res) => {
         throw new ApiError(400, error?.message)
     }
 })
+
 
 const loginUser = asyncHandler(async(req, res) => {
     try {
@@ -317,7 +371,8 @@ const getAllUser = asyncHandler(async(req, res) => {
 })
 
 
-export { 
+export {
+    createRootAdmin, 
     registerUser,
     loginUser,
     logoutUser,
