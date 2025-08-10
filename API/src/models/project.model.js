@@ -15,8 +15,7 @@ const projectSchema = new Schema({
     dockerImage: {
         type: String,
         required: true,
-        trim: true,
-        unique: true
+        trim: true
     },
     poolInterval: {
         type: Number,
@@ -33,11 +32,11 @@ const projectSchema = new Schema({
         type: String,
         required: true
     },
-    githubToken: {
+    githubPAT: {
         type: String,
         required: true
     },
-    dockerhubPat: {
+    dockerhubPAT: {
         type: String,
         validate: {
             validator: function (v) {
@@ -60,17 +59,10 @@ const projectSchema = new Schema({
             },
             message: "DockerHub username is required when imageType is private"
         }
-    },
-    patcherName: {
-        type: String,
-        required: true,
-        trim: true
     }
 
 }, {
     timeseries: true
 })
 
-const Project = mongoose.model("Project", projectSchema)
-
-export default Project
+export const Project = mongoose.model("Project", projectSchema)

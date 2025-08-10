@@ -7,6 +7,10 @@ const environmentSchema = new Schema({
         required: true,
         trim: true
     },
+    environmentNumber: {
+        type: Number,
+        required: true
+    },
     project: {
         type: Schema.Types.ObjectId,
         ref: "Project",
@@ -34,6 +38,4 @@ const environmentSchema = new Schema({
     timeseries: true
 })
 
-const Environment = mongoose.model("Environment", environmentSchema)
-
-export default Environment
+export const Environment = mongoose.model("Environment", environmentSchema)

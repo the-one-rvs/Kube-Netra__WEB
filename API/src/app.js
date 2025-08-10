@@ -24,4 +24,7 @@ app.use(cookieParser())
 import userRouter from './routes/user.routes.js'
 app.use("/api/v1/users", userRouter)
 
+import projectRouter from './routes/project.routes.js'
+app.use("/api/v1/project", projectRouter)
+
 export { app }
