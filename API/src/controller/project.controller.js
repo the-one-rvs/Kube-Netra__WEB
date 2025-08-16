@@ -3,6 +3,7 @@ import { Project } from "../models/project.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { GithubPAT } from "../models/githubPAT.model.js";
 
 const createProject = asyncHandler(async(req, res) => {
     try {
@@ -12,8 +13,6 @@ const createProject = asyncHandler(async(req, res) => {
             dockerImage,
             poolInterval,
             imageType,
-            githubUsername,
-            githubPAT,
             dockerhubPAT,
             dockerhubUsername
         } = req.body
@@ -42,9 +41,7 @@ const createProject = asyncHandler(async(req, res) => {
             dockerImage: dockerImage,
             poolInterval: poolInterval,
             imageType: imageType,
-            createdBy: req.user._id,
-            githubUsername:githubUsername,
-            githubPAT: githubPAT
+            createdBy: req.user._id
         })
 
         if (imageType === "private") {

@@ -22,19 +22,14 @@ const projectSchema = new Schema({
         required: true,
         trim: true
     },
+    nameOfGithubPAT: {
+        type: String
+    },
     imageType: {
         type: String,
         enum: ["public", "private"],
         required: true,
         default: "public"
-    },
-    githubUsername: {
-        type: String,
-        required: true
-    },
-    githubPAT: {
-        type: String,
-        required: true
     },
     dockerhubPAT: {
         type: String,
