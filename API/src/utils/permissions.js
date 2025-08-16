@@ -54,5 +54,17 @@ export const PERMISSION_LIST = [
   {
     name: "access_delete_environment",
     description: "Access to delete environment"
+  }, 
+  {
+    name: "access_add_pat",
+    description: "Access to add Github PAT"
+  },
+  {
+    name: "access_add_pat_in_project",
+    description: "Access to add Github PAT in project"
+  },
+  {
+    name: "access_delete_pat",
+    description: "Access to delete Github PAT"
   }
 ]
